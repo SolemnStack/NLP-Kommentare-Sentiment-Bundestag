@@ -34,12 +34,12 @@ rededict = {}
 print("Inhalt aller Reden im Dokument:")
 # Iterates over the whole xml text and pulls the content from the <rede>-tags
 for rede in root.iter('rede'):
-    redefraktion = rede.find("p/redner/name/fraktion").text
+    redefraktion = rede.find("p/redner/name/fraktion").text.replace("\xa0", " ")
     redeinhalt = ""
     # Saves the contents from the <p>-tags of a <rede> into one string (redeinhalt)
     for i, text in enumerate(rede.findall('p')):
         if i > 0:
-            redeinhalt += text.text
+            redeinhalt += text.text.replace("\xa0", " ")
 
     # List of all comments of one <rede>
     kommentarliste = []
@@ -47,12 +47,12 @@ for rede in root.iter('rede'):
     for i, text in enumerate(rede.findall('kommentar')):
         # Saves the party name of a comment
         # TODO:: RegEx needs to be refined
-        fraktion = re.search(r"\[.*\]:", text.text)
+        fraktion = re.search(r"\[(DIE LINKE|SPD|AfD|CDU\/CSU|FDP|BÜNDNIS 90\/DIE GRÜNEN)\]:", text.text.replace("\xa0", " "))
         # Only process comment if it is a party comment (excludes Beifälle, etc.)
         if fraktion != None:
             start, end = fraktion.span()
             kommentarfraktion = text.text[start:end-1]
-            kommentarinhalt = re.split(":" ,text.text)[1]
+            kommentarinhalt = re.split(":" ,text.text)[1].replace("\xa0", " ")
             kommentarliste.append((kommentarfraktion, kommentarinhalt))
 
     rededict[rede.attrib['id']] = (redefraktion, redeinhalt, kommentarliste)
@@ -62,7 +62,6 @@ for rede in root.iter('rede'):
 for key in rededict:
     print(key, '->', rededict[key])
     print('')
-
 
 ##########################################################
 ############ Hier folgen meine Testversuche ##############
@@ -142,6 +141,7 @@ print(testliste)
 for textl in testliste:
     print(textl.text)
 '''
+
 # Test um Redeinhalte in eine Liste zu speichern
 #redeliste = list()
 #for i, tagesordnung in enumerate(root.iter('tagesordnung')):
@@ -151,8 +151,6 @@ for textl in testliste:
 
 # Speichert alle Beiträge in Reden in eine Redeliste
 # Einzelne Reden danach erreichbar mit redeliste[x]
-
-
 
 #print('Die gesamte Redeliste')
 #print(redeliste)
