@@ -45,16 +45,21 @@ for rede in root.iter('rede'):
     kommentarliste = []
     # Iterates over all comments <kommentare> of a <rede>
     for i, text in enumerate(rede.findall('kommentar')):
-        # Saves the party name of a comment
-        # TODO:: RegEx needs to be refined
-        fraktion = re.search(r"\[(DIE LINKE|SPD|AfD|CDU\/CSU|FDP|BÜNDNIS 90\/DIE GRÜNEN)\]:", text.text.replace("\xa0", " "))
+        # Extracts the complete comment of one party. 
+        # If the comments of multiple parties are recorded in a single tag, then they are also captured
         # Only process comment if it is a party comment (excludes Beifälle, etc.)
-        if fraktion != None:
-            start, end = fraktion.span()
-            kommentarfraktion = text.text[start:end-1]
-            kommentarinhalt = re.split(":" ,text.text)[1].replace("\xa0", " ")
+        fraktion = re.findall(r"(\[(DIE LINKE|SPD|AfD|CDU\/CSU|FDP|BÜNDNIS 90\/DIE GRÜNEN)\]:.+?(–|\)))", text.text.replace("\xa0", " "))
+
+        # Iterates over all found occurences of comments per <kommentar>-tag
+        # Then saves the contents as party name and comment content
+        # This is then appended to the list of comments 
+        for kommentar in fraktion:
+            kommentarfraktion = re.split(": ", kommentar[0])[0]
+            kommentarinhalt = re.split(": ", kommentar[0])[1].replace(")", "").replace(" –", "")
             kommentarliste.append((kommentarfraktion, kommentarinhalt))
 
+    # Saves the recorded contents of a single <rede> into a dictionary
+    # the structure is described above (line 28-31)
     rededict[rede.attrib['id']] = (redefraktion, redeinhalt, kommentarliste)
 
 #print(rededict['ID20100100'])
