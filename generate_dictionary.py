@@ -74,6 +74,36 @@ for key in rededict:
 out_file = open("BundestagsRedenSample.json", "w", encoding='utf8')
 json.dump(rededict, out_file, indent = 4, ensure_ascii=False)
 
+print("Rede der Fraktion:")
+print(rededict['ID20100600'][0])
+print("Redeinhalt:")
+print(rededict['ID20100600'][1])
+
+print("Kommentar-Fraktion")
+# Gibt den ersten Kommentar der Rede ID20100600 aus
+# Wenn weitere Kommentare gesehen werden wollen, dann muss das X geändert werden -> [2][X][0]
+print(rededict['ID20100600'][2][0][0])
+print("Kommentar Inhalt")
+# Gibt den Inhalt des ersten Kommentars der Rede ID20100600 aus.
+# Auch hier muss man an der zweiten Stelle die Zahl ändern um an die nächsten KOmmentar zu gelangen. 0, 1, 2 usw.
+print(rededict['ID20100600'][2][0][1])
+
+print("Schleifentest:")
+for x in rededict:
+    # Printed die Redefraktion
+    print(rededict[x][0])
+    # Printed den Redeinhalt
+    print(rededict[x][1])
+
+    # Printed die Kommentarfraktion
+    print(rededict[x][2])
+    if rededict[x][2] != []: #prüft ob überhaupt Kommentare vorhanden sind
+        print(rededict[x][2][0][0])
+
+    # Printed den Kommentarinhalt
+    if rededict[x][2] != []: #prüft ob überhaupt Kommentare vorhanden sind
+        print(rededict[x][2][0][1])
+
 ###################################################################
 ###################################################################
 
@@ -87,7 +117,7 @@ for plenarsitzung in plenarliste:
     tree = ET.ElementTree(ET.fromstring(plenarsitzung))
     # sets the root of the xml file
     root = tree.getroot()
-    print("noch alles ok")
+    #print("noch alles ok")
     # Our central dictionary which contains an ID, the party from which the speech originates, speechcontent,  
     # Party from which a comment originates and the content of the comment itself
     # Struktur des rededict:
@@ -106,6 +136,8 @@ for plenarsitzung in plenarliste:
         for i, text in enumerate(rede.findall('p')):
             if i > 0:
                 redeinhalt += text.text.replace("\xa0", " ")
+                if rede.attrib['id'] == 'ID205718200':
+                    print(redeinhalt)
 
         # List of all comments of one <rede>
         kommentarliste = []
@@ -122,6 +154,8 @@ for plenarsitzung in plenarliste:
             for kommentar in fraktion:
                 kommentarfraktion = re.split(": ", kommentar[0])[0]
                 kommentarinhalt = re.split(": ", kommentar[0])[1].replace(")", "").replace(" –", "")
+                #if rede.attrib['id'] == 'ID205403900':
+                #    print(kommentarinhalt)
                 kommentarliste.append((kommentarfraktion, kommentarinhalt))
 
         # Saves the recorded contents of a single <rede> into a dictionary
