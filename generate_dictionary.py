@@ -41,7 +41,7 @@ for rede in root.iter('rede'):
     # Saves the contents from the <p>-tags of a <rede> into one string (redeinhalt)
     for i, text in enumerate(rede.findall('p')):
         if i > 0:
-            redeinhalt += text.text.replace("\xa0", " ")
+            redeinhalt += text.text.replace("\xa0", " ").lower()
 
     # List of all comments of one <rede>
     kommentarliste = []
@@ -57,7 +57,7 @@ for rede in root.iter('rede'):
         # This is then appended to the list of comments 
         for kommentar in fraktion:
             kommentarfraktion = re.split(": ", kommentar[0])[0]
-            kommentarinhalt = re.split(": ", kommentar[0])[1].replace(")", "").replace(" –", "")
+            kommentarinhalt = re.split(": ", kommentar[0])[1].replace(")", "").replace(" –", "").lower()
             kommentarliste.append((kommentarfraktion, kommentarinhalt))
 
     # Saves the recorded contents of a single <rede> into a dictionary
@@ -67,13 +67,14 @@ for rede in root.iter('rede'):
 #print(rededict['ID20100100'])
 #print(rededict)
 for key in rededict:
-    print(key, '->', rededict[key])
+    print(key, '->', rededict[key][1])
     print('')
 
 # Saves dictionary as json file
 out_file = open("BundestagsRedenSample.json", "w", encoding='utf8')
 json.dump(rededict, out_file, indent = 4, ensure_ascii=False)
 
+'''
 print("Rede der Fraktion:")
 print(rededict['ID20100600'][0])
 print("Redeinhalt:")
@@ -103,7 +104,7 @@ for x in rededict:
     # Printed den Kommentarinhalt
     if rededict[x][2] != []: #prüft ob überhaupt Kommentare vorhanden sind
         print(rededict[x][2][0][1])
-
+'''
 ###################################################################
 ###################################################################
 
@@ -126,7 +127,7 @@ for plenarsitzung in plenarliste:
     #print("Inhalt aller Reden im Dokument:")
     # Iterates over the whole xml text and pulls the content from the <rede>-tags
     for rede in root.iter('rede'):
-        print(rede.attrib)
+        #print(rede.attrib)
         if rede.find("p/redner/name/fraktion") != None:
             redefraktion = rede.find("p/redner/name/fraktion").text.replace("\xa0", " ")
         else:
@@ -135,9 +136,9 @@ for plenarsitzung in plenarliste:
         # Saves the contents from the <p>-tags of a <rede> into one string (redeinhalt)
         for i, text in enumerate(rede.findall('p')):
             if i > 0:
-                redeinhalt += text.text.replace("\xa0", " ")
-                if rede.attrib['id'] == 'ID205718200':
-                    print(redeinhalt)
+                redeinhalt += text.text.replace("\xa0", " ").lower()
+                #if rede.attrib['id'] == 'ID205718200':
+                #    print(redeinhalt)
 
         # List of all comments of one <rede>
         kommentarliste = []
@@ -153,7 +154,7 @@ for plenarsitzung in plenarliste:
             # This is then appended to the list of comments 
             for kommentar in fraktion:
                 kommentarfraktion = re.split(": ", kommentar[0])[0]
-                kommentarinhalt = re.split(": ", kommentar[0])[1].replace(")", "").replace(" –", "")
+                kommentarinhalt = re.split(": ", kommentar[0])[1].replace(")", "").replace(" –", "").lower()
                 #if rede.attrib['id'] == 'ID205403900':
                 #    print(kommentarinhalt)
                 kommentarliste.append((kommentarfraktion, kommentarinhalt))
